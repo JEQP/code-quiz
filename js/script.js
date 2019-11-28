@@ -17,6 +17,7 @@ var timeLeftCD = timeGiven; // the time that is left once quiz has started.
 
 
 
+
 function startPage() {
     // changes the innerHTML of textBlock to start page content. 
 }
@@ -31,7 +32,7 @@ function printQuestion() {
         if (questions[questionNumber].choices[x] !== randQueArray[i - 1] && questions[questionNumber].choices[x] !== randQueArray[i - 2] && questions[questionNumber].choices[x] !== randQueArray[i - 3]) {
             // the xth item in the choices array of the ith item (object) of the questions array does not equal randQueArray[i-1] && etc randQueArray[i-2] && etc randQueArray [i-3] 
             randQueArray[i] = questions[questionNumber].choices[x]
-            console.log("i is " + i + " and x is " + x);
+            // console.log("i is " + i + " and x is " + x);
         }
         else {
             i--;
@@ -59,26 +60,26 @@ function printQuestion() {
         event.preventDefault();
         if (event.target.matches("button")) {
             answerClicked = event.target.textContent;
-            console.log("you clicked " + answerClicked);
+            // console.log("you clicked " + answerClicked);
 
             // it checks answer
 
             if (answerClicked == correctAnswer) {
                 currentScore++;
                 questionNumber++;
-                console.log("score is now " + currentScore);
+                // console.log("score is now " + currentScore);
             }
             else {
                 questionNumber++;
                 timeLeftCD = timeLeftCD - 15;
-                console.log("wrong answer");
+                // console.log("wrong answer");
             }
             // checks there are still questions to ask, and if so restarts the question asking process
             if (questionNumber < questions.length) {
                 printQuestion();
             }
             else {
-                timeLeftCD=0;
+                timeLeftCD = 0;
                 quizOver();
             }
         }
@@ -94,13 +95,13 @@ function startCountDown() {
         timeLeftCD--;
         if (timeLeftCD <= 0) {
             clearInterval(countDown);
-            timeLeftDisplay.textContent = "0";
+            timeLeftDisplay.textContent = "Time Left: 0";
             quizOver();
             return;
         }
 
     }, 1000);
-   
+
     clearInterval(startCountDown);
 }
 
@@ -128,37 +129,68 @@ function scoreQuestion() {
     //   }
 }
 
+// When the timer runs out, or all questions are answered, this function is called.
+// It changes innerHTML of textBlock to blurb with score, prompts for initials
+// stores initials and scores in local storage
+// calls start page
+
 function quizOver() {
 
     pageContent.innerHTML = "You answered " + currentScore + " correct."
-    var initials = createElement("form");//this is not defined.
-    pageContent.appendChild(initials);
-    var enterIntials = createElement("div");
-    enterIntials.setattribute("type", "text");
-    enterIntials.setattribute("id", "pIni");
-    enterIntials.setattribute("placeholder", "Your Initials");
-    initials.appendChild(enterIntials);
-    var submitInitials = createElement("button");
-    submitInitials.setattribute("id","submit");
-    initials.appendChild(submitInitials);
+    // create element to hold form
+    var initialsForm = document.createElement("div");
+    // create innerhtml of this element
+    initialsForm.innerHTML = '<form id="frm1" action="/action_page.php">    Your Initials: <input type="text" name="pIni"><br><input type="button" value="Submit" id="submitBtn"></form>';
+    var currentInitials = initialsForm.getElementsByTagName("pIni");
+    console.log(currentInitials);
+    // append this element to pageContent
 
+    pageContent.appendChild(initialsForm);
     
+    submitBtn.addEventListener("click", submitScore(currentInitials));
 
-
-//     <form id="form">
-//     <div>
-//       <input type="text" id="total" placeholder="total price of meal" />
-//     </div>
-//     <input type="text" id="tip-percentage" placeholder="tip percentage" />
-//     <button id="submit">Calculate Tip</button>
-//   </form>
-    // When the timer runs out, or all questions are answered, this function is called.
-    // It changes innerHTML of textBlock to blurb with score, prompts for initials
-    // stores initials and scores in local storage
-    // calls start page
 }
 
+function submitScore() {
+    event.preventDefault();
+    console.log("Submit Button Clicked");
+    console.log(pIni);
+
+    // We don't need to store as an array of objects - just have initials be the key and score be the value.
+    // Check if there is something in storage with player initials
+    // check local storage. 
+    var highScoresString = localStorage.getItem("highScores");
+    // console.log(highScoresString);
+    // check if string exists, then convert to JSON
+    if (highScoresString != null) {
+        var highScoresJSON = JSON.parse(highScoresString);
+        // Then checks for entered initials, if found compares scores, if higher replaces them. 
+        var alreadyExist = false;
+
+        var test = pIni;
+
+        if (highScoresJSON.hasOwnProperty(pIni)) {
+            alreadyExist = true;
+            if (highScoresJSON[pIni] < currentScore) {
+                highScoresJSON[pIni] = currentScore;
+            }
+        }
+        else {
+            highScoresJSON.pIni = currentScore;
+        }
+        console.log(highScoresJSON);
+    }
+
+    // Check if current score is higher than stored score
+
+    // convert player initials and highscore into a string
+
+    // store that string
+//     localStorage.setItem("Player", pIni);
+//     localStorage.setItem("Score", currentScore);
+}
 
 startBtn.addEventListener("click", printQuestion);
+
 
 
