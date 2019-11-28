@@ -13,7 +13,9 @@ var questionNumber = 0;
 var currentScore = 0;
 var answerClicked = "";
 var timeGiven = 75; // time to complete the quiz
-var timeLeft = timeGiven; // the time that is left once quiz has started. 
+var timeLeftCD = timeGiven; // the time that is left once quiz has started. 
+
+
 
 function startPage() {
     // changes the innerHTML of textBlock to start page content. 
@@ -68,7 +70,7 @@ function printQuestion() {
             }
             else {
                 questionNumber++;
-                timeLeft = timeLeft - 15;
+                timeLeftCD = timeLeftCD - 15;
                 console.log("wrong answer");
             }
             // checks there are still questions to ask, and if so restarts the question asking process
@@ -76,6 +78,7 @@ function printQuestion() {
                 printQuestion();
             }
             else {
+                timeLeftCD=0;
                 quizOver();
             }
         }
@@ -83,19 +86,22 @@ function printQuestion() {
 
 
 }
-
+// set the setInterval as a global variable and then call that variable. clearfunction should clear that.
 function startCountDown() {
     var countDown = setInterval(function () {
         // display time
-        timeLeftDisplay.textContent = timeLeft;
-        timeLeft--;
-        if (timeLeft <= 0) {
-            quizOver();
+        timeLeftDisplay.textContent = "Time Left: " + timeLeftCD;
+        timeLeftCD--;
+        if (timeLeftCD <= 0) {
+            clearInterval(countDown);
             timeLeftDisplay.textContent = "0";
+            quizOver();
             return;
         }
 
     }, 1000);
+   
+    clearInterval(startCountDown);
 }
 
 function scoreQuestion() {
@@ -123,9 +129,9 @@ function scoreQuestion() {
 }
 
 function quizOver() {
-    clearInterval(countDown);
+
     pageContent.innerHTML = "You answered " + currentScore + " correct."
-    var initials = createElement("form");
+    var initials = createElement("form");//this is not defined.
     pageContent.appendChild(initials);
     var enterIntials = createElement("div");
     enterIntials.setattribute("type", "text");
