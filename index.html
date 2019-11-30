@@ -14,13 +14,13 @@
     <div class="wrapper">
         <!-- landing page. Heading large, description of challenge. Top left - button to view high scores. Top right - countdown timer big button to start quiz-->
         <header>
-            <a href="" id="highScoresButton">High Scores</a>
+            <p id="highScoresButton">High Scores</p>
             <p id="timeLeft">Time Left: 75</p>
             <h1 id="landingHeader">Coding Quiz</h1>
 
         </header>
-        <br>
-        <div id="textBlock">
+        
+        <div id="textBlock" class="show">
             <p>
                 This quiz will test your knowledge on coding to an extent to which you have never before been subject!
                 Unless,
@@ -33,6 +33,34 @@
             </p>
             <button id="startButton">Dare you?</button>
         </div>
+
+        <!-- After quiz finishes this is shown.  -->
+        <div id="endPage" class="hide">
+            <h3 id="scoreNotification"></h3>
+            <p>
+                I'll leave it up to you to decide if that was a good score, relative to where you are in the learning process. If you want to compare scores with anyone else who has done the test on this computer, please fill in the form below.
+            </p>
+            <form id="frm1" action="/action_page.php">    Your Initials: <input id="initialEntered" type="text" name="pIni"><br><input type="button" value="Submit" id="submitBtn"></form>
+            <hr>
+            <button id="restartQuiz">Another?</button>
+           
+        </div>
+
+        <!-- when High Scores Button is clicked this is shown -->
+
+        <div id="highScoresPage" class="hide">
+
+            <p id="highScoresList">
+
+            </p>
+
+
+                <button id="restartQuiz2">Another?</button>
+
+        </div>
+
+
+
 
         <!-- on clicking start quiz: quiz title minimised to be less obvious. Start countdown timer. Start quiz  -->
 

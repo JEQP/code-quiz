@@ -1,13 +1,20 @@
-// Variables required: Timer, textBlock for changing text content, startButton id, score, initials, randQueArray, correctAnswer
-// a script to change the innerHTML of textBlock for the quizzes
-// functions for showing the quizzes - make them numbered so it's a simple loop
-// innerHTML or appendChild? innerHTML, because that replaces. appendChild will add to the content.
+
 
 var pageContent = document.getElementById("textBlock");
 var timeLeftDisplay = document.getElementById("timeLeft");
 var startBtn = document.getElementById("startButton");
 var highScoresBtn = document.getElementById("highScoresButton");
+var endPageEl = document.getElementById("endPage");
+var scoreNotificationEl = document.getElementById("scoreNotification");
+var submitBtnEl = document.getElementById("submitBtn");
+var iniForm = document.getElementById("frm1");
+var highScoresEl = document.getElementById("highScoresButton");
+var highScoresPg = document.getElementById("highScoresPage");
+var restartQuiz = document.getElementById("restartQuiz");
+var restartQuiz2 = document.getElementById("restartQuiz2");
+var listHighScores = document.getElementById("highScoresList");
 var correctAnswer = "String";
+var currentInitials = "string";
 var randQueArray = ["", "", "", ""];
 var questionNumber = 0;
 var currentScore = 0;
@@ -17,14 +24,35 @@ var timeLeftCD = timeGiven; // the time that is left once quiz has started.
 
 
 
-
+// changes the innerHTML of textBlock to start page content. 
 function startPage() {
-    // changes the innerHTML of textBlock to start page content. 
+    questionNumber = 0;
+    timeGiven = 75;
+    timeLeftCD = timeGiven;
+    correctAnswer = "";
+    currentInitials = "";
+    currentScore = 0;
+    answerClicked = "";
+    pageContent.innerHTML="";
+    var sp1 = document.createElement("p");
+    sp1.textContent="This quiz will test your knowledge on coding to an extent to which you have never before been subject! Unless, maybe, you've previously done a quiz on coding.";
+    pageContent.appendChild(sp1);
+    var sp2 = document.createElement("p");
+    sp2.textContent = "The format is simple. A question will appear on the screen, and you will be offered four different options, only one of which is correct. Choose wisely, for while a correct answer will raise your score, an erroenous response will REMOVE 15 SECONDS FROM YOUR AVAILABLE TIME!";
+    pageContent.appendChild(sp2);
+    var sbutt = document.createElement("button");
+    sbutt.setAttribute("id", "startButton2");
+    sbutt.textContent = "Dare you?";
+    pageContent.appendChild(sbutt);
+    pageContent.setAttribute("class", "show");
+    endPageEl.setAttribute("class", "hide");
+    highScoresPg.setAttribute("class", "hide");
+    sbutt.addEventListener("click", printQuestion);
 }
+// Runs through the questions
 
 function printQuestion() {
-    // while (questionNumber < questions.length) {
-    // This has a for loop which takes a global array, and fills it with answers from questions.js
+
     startCountDown();
     pageContent.innerHTML = "";
     for (var i = 0; i < randQueArray.length; i++) {
@@ -87,6 +115,7 @@ function printQuestion() {
 
 
 }
+
 // set the setInterval as a global variable and then call that variable. clearfunction should clear that.
 function startCountDown() {
     var countDown = setInterval(function () {
@@ -105,30 +134,6 @@ function startCountDown() {
     clearInterval(startCountDown);
 }
 
-function scoreQuestion() {
-    // This is called by an event listener for the answer. It checks whether the answer is correct.
-    // Bonus: appropriate sound for right or wrong. 
-    // if-else increase score or lower timer
-    // calls printQuestion()
-    // function handleClick() {
-    //     // Use event delegation to handle when the user clicks "edit"
-    //     if (event.target.matches("button")) {
-    //       event.preventDefault();
-    //       modalEl.style.display = "block"; // changes the modal element, which is void, to block
-    //       currentId = parseInt(event.target.parentElement.id); // this changes the currentID to the parent element of the button, which is where the name is read in html
-    //       var name = people[currentId].name; // this changes the name variable to that found in the item of the people array at the currentid
-    //       var description = people[currentId].description; // the same but for description. 
-    //       modalNameEl.textContent = name; // this prints the name into the html at the modal-name id.
-    //       if (description) {
-    //         descriptionEl.value = description; // if there is a description, this prints it at the description id
-    //       }
-    //       else {
-    //         descriptionEl.value = "";
-    //       }
-    //     }
-    //   }
-}
-
 // When the timer runs out, or all questions are answered, this function is called.
 // It changes innerHTML of textBlock to blurb with score, prompts for initials
 // stores initials and scores in local storage
@@ -136,61 +141,80 @@ function scoreQuestion() {
 
 function quizOver() {
 
-    pageContent.innerHTML = "You answered " + currentScore + " correct."
     // create element to hold form
-    var initialsForm = document.createElement("div");
-    // create innerhtml of this element
-    initialsForm.innerHTML = '<form id="frm1" action="/action_page.php">    Your Initials: <input type="text" name="pIni"><br><input type="button" value="Submit" id="submitBtn"></form>';
-    var currentInitials = initialsForm.getElementsByTagName("pIni");
-    console.log(currentInitials);
-    // append this element to pageContent
 
-    pageContent.appendChild(initialsForm);
-    
-    submitBtn.addEventListener("click", submitScore(currentInitials));
+    pageContent.setAttribute("class", "hide");
+    endPageEl.setAttribute("class", "show");
+    highScoresPg.setAttribute("class", "hide");
+    scoreNotificationEl.innerHTML = "You answered " + currentScore + " correct.";
+    submitBtnEl.addEventListener("click", submitScore);
+
+
 
 }
 
 function submitScore() {
-    event.preventDefault();
-    console.log("Submit Button Clicked");
-    console.log(pIni);
+    currentInitials = document.getElementById("initialEntered").value;
 
-    // We don't need to store as an array of objects - just have initials be the key and score be the value.
+    // console.log(currentInitials);
+
     // Check if there is something in storage with player initials
     // check local storage. 
     var highScoresString = localStorage.getItem("highScores");
+    console.log("highScoresString is " + highScoresString);
     // console.log(highScoresString);
     // check if string exists, then convert to JSON
-    if (highScoresString != null) {
-        var highScoresJSON = JSON.parse(highScoresString);
-        // Then checks for entered initials, if found compares scores, if higher replaces them. 
-        var alreadyExist = false;
 
-        var test = pIni;
+    if (JSON.parse(localStorage.getItem("highScores")) == null) {
 
-        if (highScoresJSON.hasOwnProperty(pIni)) {
-            alreadyExist = true;
-            if (highScoresJSON[pIni] < currentScore) {
-                highScoresJSON[pIni] = currentScore;
-            }
+        var highScoresJSON = [];
+        var scores = {
+            "name": currentInitials,
+
+            "score": currentScore
         }
-        else {
-            highScoresJSON.pIni = currentScore;
+        highScoresJSON.push(scores);
+
+        localStorage.setItem('highScores', JSON.stringify(highScoresJSON));
+
+    }
+    else {
+        var highScoresJSON = JSON.parse(localStorage.getItem("highScores"));
+
+        var scores = {
+            "name": currentInitials,
+
+            "score": currentScore
         }
-        console.log(highScoresJSON);
+        highScoresJSON.push(scores);
+        localStorage.setItem('highScores', JSON.stringify(highScoresJSON));
+
     }
 
-    // Check if current score is higher than stored score
+}
 
-    // convert player initials and highscore into a string
 
-    // store that string
-//     localStorage.setItem("Player", pIni);
-//     localStorage.setItem("Score", currentScore);
+
+function showHighScores() {
+    pageContent.setAttribute("class", "hide");
+    endPageEl.setAttribute("class", "hide");
+    highScoresPg.setAttribute("class", "show");
+
+    // list highscores here listHighScores
+
+    var highScoresString = localStorage.getItem("highScores");
+    var highScoresJSON = JSON.parse(localStorage.getItem("highScores"));
+    
+    document.querySelector("#highScoresList").textContent = highScoresJSON[0].name + " - " + highScoresJSON[0].scores;
+ 
+    document.getElementById("highScoresList").textContent = highScoresString;
+
+
 }
 
 startBtn.addEventListener("click", printQuestion);
-
+highScoresEl.addEventListener("click", showHighScores);
+restartQuiz.addEventListener("click", startPage)
+restartQuiz2.addEventListener("click", startPage)
 
 
